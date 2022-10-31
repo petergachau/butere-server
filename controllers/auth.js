@@ -1,132 +1,84 @@
-
-import User from "../models/user.js";
-import { hashPassword, comparePassword } from "../helpers/auth.js";
+import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import nanoid from "nanoid";
 
-// sendgrid
-import dotenv from 'dotenv'
-import  sgMail from "@sendgrid/mail";
-sgMail.setApiKey(process.env.SENDGRID_KEY);
-  dotenv.config()
-  export const signup = async (req, res) => {
-    const { email, password, name,role,resetCode,image } = req.body;
-    try {
-      const oldUser = await UserModal.findOne({ email });
-  
-      if (oldUser) {
-        return res.status(400).json({ message: "User already exists" });
-      }
-  
-      const hashedPassword = await bcrypt.hash(password, 12);
-  
-      const result = await User.create({
-        email,
-        
-        password: hashedPassword,
-        name,
-        image,
-        role,
-        resetCode
-      });
-  
-      const token = jwt.sign({ image:result.image,email:result.email,role:result.role, id: result._id,resetCode:result.resetCode }, secret, {
-        expiresIn: "1h",
-      });
-      res.status(201).json({ result, token });
-    } catch (error) {
-      res.status(500).json({ message: "Something went wrong" });
-      console.log(error);
-    }
-  };
+import UserModal from "../models/user.js";
+
+const secret = "test";
+
 export const signin = async (req, res) => {
-  // console.log(req.body);
+  const { email, password } = req.body;
+
   try {
-    const { email, password } = req.body;
-    // check if our db has user with that email
-    const user = await User.findOne({ email });
-    if (!user) {
-      return res.json({
-        error: "No user found",
-      });
-    }
-    // check password
-    const match = await comparePassword(password, user.password);
-    if (!match) {
-      return res.json({
-        error: "Wrong password",
-      });
-    }
-    // create signed token
-    const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "7d",
+    const oldUser = await UserModal.findOne({ email });
+    if (!oldUser)
+      return res.status(404).json({ message: "User doesn't exist" });
+
+    const isPasswordCorrect = await bcrypt.compare(password, oldUser.password);
+
+    if (!isPasswordCorrect)
+      return res.status(400).json({ message: "Invalid credentials" });
+
+    const token = jwt.sign({ email: oldUser.email, id: oldUser._id }, secret, {
+      expiresIn: "1h",
     });
 
-    user.password = undefined;
-    user.secret = undefined;
-    res.json({
-      token,
-      user,
-    });
-  } catch (err) {
-    console.log(err);
-    return res.status(400).send("Error. Try again.");
+    res.status(200).json({ result: oldUser, token });
+  } catch (error) {
+    res.status(500).json({ message: "Something went wrong" });
+    console.log(error);
   }
 };
 
-export const forgotPassword = async (req, res) => {
-  const { email } = req.body;
-  // find user by email
-  const user = await User.findOne({ email });
-  console.log("USER ===> ", user);
-  if (!user) {
-    return res.json({ error: "User not found" });
-  }
-  // generate code
-  const resetCode = nanoid(5).toUpperCase();
-  // save to db
-  user.resetCode = resetCode;
-  user.save();
-  // prepare email
-  const emailData = {
-    from: process.env.EMAIL_FROM,
-    to: user.email,
-    subject: "Password reset code",
-    html: "<h1>Your password  reset code is: {resetCode}</h1>"
-  };
-  // send email
+export const signup = async (req, res) => {
+  const { email, password, name,role,image,resetCode } = req.body;
   try {
-    const data = await sgMail.send(emailData);
-    console.log(data);
-    res.json({ ok: true });
-  } catch (err) {
-    console.log(err);
-    res.json({ ok: false });
+    const oldUser = await UserModal.findOne({ email });
+
+    if (oldUser) {
+      return res.status(400).json({ message: "User already exists" });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 12);
+
+    const result = await UserModal.create({
+      email,
+      houseNo,
+      password: hashedPassword,
+      name,
+      image,
+      resetCode,
+      role
+    });
+
+    const token = jwt.sign({ role:result.role,email: result.email,resetCode:result.resetCode, id: result._id,image:result.image,name:result.name }, secret, {
+      expiresIn: "1h",
+    });
+    res.status(201).json({ result, token });
+  } catch (error) {
+    res.status(500).json({ message: "Something went wrong" });
+    console.log(error);
   }
 };
 
-export const resetPassword = async (req, res) => {
+export const googleSignIn = async (req, res) => {
+  const { email, name, token, googleId } = req.body;
+
   try {
-    const { email, password, resetCode } = req.body;
-    // find user based on email and resetCode
-    const user = await User.findOne({ email, resetCode });
-    // if user not found
-    if (!user) {
-      return res.json({ error: "Email or reset code is invalid" });
+    const oldUser = await UserModal.findOne({ email });
+    if (oldUser) {
+      const result = { _id: oldUser._id.toString(), email, name };
+      return res.status(200).json({ result, token });
     }
-    // if password is short
-    if (!password || password.length < 6) {
-      return res.json({
-        error: "Password is required and should be 6 characters long",
-      });
-    }
-    // hash password
-    const hashedPassword = await hashPassword(password);
-    user.password = hashedPassword;
-    user.resetCode = "";
-    user.save();
-    return res.json({ ok: true });
-  } catch (err) {
-    console.log(err);
+
+    const result = await UserModal.create({
+      email,
+      name,
+      googleId,
+    });
+
+    res.status(200).json({ result, token });
+  } catch (error) {
+    res.status(500).json({ message: "Something went wrong" });
+    console.log(error);
   }
 };
