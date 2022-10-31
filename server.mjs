@@ -16,7 +16,7 @@ app.use(express.json({ limit: "4mb" }));
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
-app.get('/', (req, res) => res.send('Hello Butere school'));
+app.get('/', (req, res) => res.send('Hello Butere School'));
 
 // route middlewares
 app.use("/api", authRoutes);
