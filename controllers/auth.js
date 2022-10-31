@@ -46,7 +46,7 @@ sgMail.setApiKey(process.env.SENDGRID_KEY);
     const { email, password } = req.body;
   
     try {
-      const oldUser = await UserModal.findOne({ email });
+      const oldUser = await User.findOne({ email });
       if (!oldUser)
         return res.status(404).json({ message: "User doesn't exist" });
   
