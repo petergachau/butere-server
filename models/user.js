@@ -23,11 +23,10 @@ const userSchema = new Schema(
     },
     role: {
       type: String,
-      default: "Subscriber",
+      default: "Student",
     },
     image: {
-      public_id: "",
-      url: "",
+      type:String
     },
     resetCode: "",
   },
