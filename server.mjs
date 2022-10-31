@@ -1,6 +1,10 @@
-import { createServer } from 'http';
+import express from 'express';
 
-createServer((req, res) => {
-  res.write('Hello Worldssss!');
-  res.end();
-}).listen(process.env.PORT);
+const app=express()
+const PORT=5000;
+
+app.get('/', (req, res) => res.send('Hello World Tenant!'));
+
+
+
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

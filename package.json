@@ -1,10 +1,14 @@
 {
   "name": "http-nodejs",
+  "type": "module",
   "version": "1.0.0",
   "main": "index.js",
   "author": "Aiden Bai",
   "license": "MIT",
   "scripts": {
     "start": "node server.mjs"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
   }
 }
