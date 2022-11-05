@@ -3,16 +3,20 @@ import User from "../models/user.js";
 import { hashPassword, comparePassword } from "../helpers/auth.js";
 import jwt from "jsonwebtoken";
 import nanoid from "nanoid";
-
+import bcrypt from 'bcrypt'
 // sendgrid
 import dotenv from 'dotenv'
 import  sgMail from "@sendgrid/mail";
+
+
+const secret = "test";
+
 sgMail.setApiKey(process.env.SENDGRID_KEY);
   dotenv.config()
   export const signup = async (req, res) => {
     const { email, password, name,role,resetCode,image } = req.body;
     try {
-      const oldUser = await UserModal.findOne({ email });
+      const oldUser = await User.findOne({ email });
   
       if (oldUser) {
         return res.status(400).json({ message: "User already exists" });

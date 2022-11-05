@@ -5,6 +5,11 @@ import cors from "cors";
 import mongoose from "mongoose";
 import dotenv from 'dotenv'
 import authRoutes from "./routes/auth.js";
+import studentRoutes from './routes/student.js'
+
+
+
+
 dotenv.config()
 
 
@@ -20,6 +25,7 @@ app.get('/', (req, res) => res.send('Hello Butere School'));
 
 // route middlewares
 app.use("/api", authRoutes);
+app.use("/student", studentRoutes);
 
 app.listen(process.env.PORT, () => console.log(`Server running on port ${process.env.PORT}`));
 
