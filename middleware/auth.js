@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 import UserModel from "../models/user.js";
 
-const secret = "test";
+const secret = "secret";
 
 const auth = async (req, res, next) => {
   try {
@@ -9,7 +9,7 @@ const auth = async (req, res, next) => {
     const isCustomAuth = token?.length < 500;
     let decodedData;
     if (token && isCustomAuth) {
-      decodedData = jwt.verify(token, secret);
+      decodedData = jwt.verify(token, secret,{expiresIn:'1000d'});
       req.userId = decodedData?.id;
     } else {
       decodedData = jwt.decode(token);
