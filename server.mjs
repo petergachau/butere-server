@@ -19,7 +19,8 @@ import adminRoute from './routes/admin.js'
 import tenderFormRoute from './routes/tenderForm.js'
 import feesRoute from './routes/fees.js'
 import resultsRoute from './routes/results.js'
-
+import revisionRoute from './routes/revision.js'
+import userRoute from './routes/userCrud.js'
 
 
 const __filename = fileURLToPath(import.meta.url);
@@ -31,13 +32,14 @@ dotenv.config()
 const app=express()
 const PORT=5000;
 
-
+// https://e1fa-102-7-24-211.eu.ngrok.io/
 app.use(express.json({ limit: "4mb" }));
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
 app.get('/', (req, res) => res.send('Hello Butere School'));
-
+app.set("view engine", "ejs");
+app.use(express.urlencoded({ extended: false }));
 app.post("/upload", (req, res) => {
   const filename = Date.now() + "_" + req.files.screenshot.name;
   const file = req.files.screenshot;
@@ -52,7 +54,7 @@ app.post("/upload", (req, res) => {
 app.use('/uploads', express.static(path.join(__filename, 'uploads')));
 
 // route middlewares
-app.use("/api", authRoutes);
+app.use("/", authRoutes);
 app.use("/student", studentRoutes);
 app.use("/teacher", teacherRoutes);
 app.use("/tender", tenderRoute);
@@ -65,7 +67,8 @@ app.use("/stats", adminRoute);
 app.use("/tenderform", tenderFormRoute);
 app.use("/fees", feesRoute);
 app.use("/results", resultsRoute);
-
+app.use("/revisions", revisionRoute);
+app.use("/users", userRoute);
 app.listen(process.env.PORT, () => console.log(`Server running on port ${process.env.PORT}`));
 
 

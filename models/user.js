@@ -25,6 +25,10 @@ const userSchema = new Schema(
       type: String,
       default: "Student",
     },
+    clas: {
+      type: String,
+      
+    },
     image: {
       type:String
     },
