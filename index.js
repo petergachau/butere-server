@@ -21,7 +21,7 @@ import feesRoute from './routes/fees.js'
 import resultsRoute from './routes/results.js'
 import revisionRoute from './routes/revision.js'
 import userRoute from './routes/userCrud.js'
-
+import heroRouter from './routes/hero.js'
 
 const __filename = fileURLToPath(import.meta.url);
 
@@ -69,6 +69,7 @@ app.use("/fees", feesRoute);
 app.use("/results", resultsRoute);
 app.use("/revisions", revisionRoute);
 app.use("/users", userRoute);
+app.use("/hero", heroRouter);
 app.listen(process.env.PORT, () => console.log(`Server running on port ${process.env.PORT}`));
 
 
