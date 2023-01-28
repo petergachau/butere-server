@@ -22,6 +22,8 @@ import resultsRoute from './routes/results.js'
 import revisionRoute from './routes/revision.js'
 import userRoute from './routes/userCrud.js'
 import heroRouter from './routes/hero.js'
+import footbalRouter from './routes/football.js'
+import pointsRouter from './routes/points.js'
 
 const __filename = fileURLToPath(import.meta.url);
 
@@ -70,6 +72,8 @@ app.use("/results", resultsRoute);
 app.use("/revisions", revisionRoute);
 app.use("/users", userRoute);
 app.use("/hero", heroRouter);
+app.use("/points", pointsRouter);
+app.use("/footbal", footbalRouter);
 app.listen(process.env.PORT, () => console.log(`Server running on port ${process.env.PORT}`));
 
 

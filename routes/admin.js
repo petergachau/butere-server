@@ -6,6 +6,7 @@ import moment from 'moment'
 import AssModal from '../models/ass.js';
 import StuffModal from '../models/stuff.js';
 import RevisionModal from '../models/revision.js';
+import heroModal from "../models/frontPage.js";
 const router = express.Router();
 
 router.get ('/total1',  async (req,res)=>{
@@ -147,6 +148,29 @@ router.get ('/classes3',  async (req,res)=>{
     try {
         const users= await AssModal.aggregate([
             { $match : { class:'1North',createdAt:{$gte:new Date(previosMonth)}} },
+
+            
+            // { $match : { isAdmin : true } },
+            // { $match : { supervisor : true } },
+        ]);
+        res.status(200).send(users);
+    } catch (error) {
+        console.log(error);
+        res.status(500).send(error)
+    }
+
+
+})
+
+router.get ('/hero',  async (req,res)=>{
+    const previosMonth=moment()
+    .month(moment().month()-1)
+    .set('date',1)
+    .format('YYYY-MM-DD HH:mm:ss');
+    // res.status(200).send(previosMonth)
+    try {
+        const users= await heroModal.aggregate([
+            { $match : { createdAt:{$gte:new Date(previosMonth)}} },
 
             
             // { $match : { isAdmin : true } },
