@@ -39,7 +39,7 @@ app.use(express.json({ limit: "4mb" }));
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
-app.get('/', (req, res) => res.send('Hello Butere School'));
+app.get('/', (req, res) => res.send('Hello Butere High School'));
 app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: false }));
 app.post("/upload", (req, res) => {
